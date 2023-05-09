@@ -80,20 +80,20 @@ locals {
       name => values
   }
 
+  #    name[keys(name)[0]]
   distinct_henrys_faves = distinct(flatten([
     for name in local.pasta : [
-      #    name[keys(name)[0]]
       keys(name)
     ]
   ]))
 
-  distinct_henrys_faves_2 = {
+  henrys_faves_days_map = {
     for name in local.distinct_henrys_faves :
       name => local.days
   }
 
   mynewmap = {
-    for fave, days in local.distinct_henrys_faves_2 :
+    for fave, days in local.henrys_faves_days_map :
       fave => {
         for d in days :
          d => contains(keys(lookup(local.pasta_days_map, d, {})), fave) ? lookup(lookup(local.pasta_days_map, d, {}), fave, null) : null
@@ -113,9 +113,15 @@ locals {
 #  value = local.distinct_henrys_faves
 #}
 
-#output "distinct_henrys_faves_2" {
-#  value = local.distinct_henrys_faves_2
-#}
+output "distinct_henrys_faves" {
+  value = local.distinct_henrys_faves
+}
+
+output "henrys_faves_days_map" {
+  value = local.henrys_faves_days_map
+}
+
+
 
 output "mynewmap" {
   value = local.mynewmap
